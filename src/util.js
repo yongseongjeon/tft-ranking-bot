@@ -25,3 +25,7 @@ export function getMmr(tier, rank, leaguePoints) {
   };
   return TIER[tier] + RANK[rank] + leaguePoints;
 }
+
+export function sortByMmrInDescend(a, b) {
+  return b.mmr - a.mmr;
+}
