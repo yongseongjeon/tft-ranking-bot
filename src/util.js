@@ -5,7 +5,7 @@ export const parseName = (name) => {
   return name;
 };
 
-export function getMmr(tier, rank, leaguePoints) {
+export function calculateMmr(tier, rank, leaguePoints) {
   const TIER = {
     IRON: 0,
     BRONZE: 401,
@@ -18,11 +18,14 @@ export function getMmr(tier, rank, leaguePoints) {
     CHALLENGER: 2406,
   };
   const RANK = {
-    I: 300,
-    II: 200,
-    III: 100,
     IV: 0,
+    III: 100,
+    II: 200,
+    I: 300,
   };
+  if (tier === "UNRANKED") {
+    return -1;
+  }
   return TIER[tier] + RANK[rank] + leaguePoints;
 }
 

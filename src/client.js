@@ -62,7 +62,12 @@ async function handleMessage(message) {
     const summoners = await Promise.all(requestPromises);
     summoners.sort(sortByMmrInDescend);
     const names = summoners.map(({ summonerName }) => summonerName);
-    const ranks = summoners.map(({ tier, rank, leaguePoints }) => `${tier} ${rank} ${leaguePoints}`);
+    const ranks = summoners.map(({ tier, rank, leaguePoints }) => {
+      if (tier === "UNRANKED") {
+        return `UNRANKED`;
+      }
+      return `${tier} ${rank} ${leaguePoints}`;
+    });
     const restRanking = Array.from({ length: Math.min(0, people.length - 3) }, (_, i) => 4 + i);
     const table = new MessageEmbed().setTitle("WE CLAN TFT 랭킹").addFields(
       {

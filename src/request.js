@@ -1,4 +1,5 @@
 import fetch from "node-fetch";
+import { calculateMmr } from "./util.js";
 
 export async function request({ url, method, body }) {
   const headers = {
@@ -34,6 +35,10 @@ export async function requestGetTftRankInfo(summonerId) {
     url: `https://kr.api.riotgames.com/tft/league/v1/entries/by-summoner/${summonerId}`,
     method: "GET",
   });
+  const hasTftStatus = !!res.length;
+  if (!hasTftStatus) {
+    return { tier: "UNRANKED" };
+  }
   const { tier, rank, summonerName, leaguePoints } = res[0];
   return { tier, rank, summonerName, leaguePoints };
 }
@@ -41,5 +46,5 @@ export async function requestGetTftRankInfo(summonerId) {
 export async function requestSummoner(name) {
   const { id: summonerId } = await requestGetSummonerInfo(name);
   const { tier, rank, summonerName, leaguePoints } = await requestGetTftRankInfo(summonerId);
-  return { tier, rank, summonerName, leaguePoints, mmr: getMmr(tier, rank, leaguePoints) };
+  return { tier, rank, summonerName: summonerName || name, leaguePoints, mmr: calculateMmr(tier, rank, leaguePoints) };
 }
