@@ -68,7 +68,7 @@ async function handleMessage(message) {
       }
       return `${tier} ${rank} ${leaguePoints}`;
     });
-    const restRanking = Array.from({ length: Math.min(0, people.length - 3) }, (_, i) => 4 + i);
+    const restRanking = Array.from({ length: Math.max(0, people.length - 3) }, (_, i) => 4 + i);
     const table = new MessageEmbed().setTitle("WE CLAN TFT 랭킹").addFields(
       {
         name: "순위\n",
