@@ -1,8 +1,8 @@
 import { Client, Intents, MessageEmbed } from "discord.js";
 import { parseName, sortByMmrInDescend } from "./util.js";
 import { requestSummoner } from "./request.js";
-import "dotenv/config";
 import { getValueFromDatabase, setValueToDatabase } from "./db.js";
+import "dotenv/config";
 
 const client = new Client({
   intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
@@ -33,20 +33,25 @@ async function handleMessage(message) {
       message.channel.send(`${parseName(enteredName)}님은 이미 추가되었습니다.`);
       return;
     }
-    const updatedPeople = [...users, parseName(enteredName)];
-    setValueToDatabase("users", updatedPeople);
+    const updatedUsers = [...users, parseName(enteredName)];
+    setValueToDatabase("users", updatedUsers);
     message.channel.send(`${parseName(enteredName)}님이 추가되었습니다.`);
     return;
   }
   if (keyword === "삭제") {
-    const updatedPeople = users.filter((userName) => userName !== parseName(enteredName));
-    setValueToDatabase("users", updatedPeople);
+    const isExistUser = users.includes(parseName(enteredName));
+    if (!isExistUser) {
+      message.channel.send(`${parseName(enteredName)}님은 순위에 존재하지 않습니다.`);
+      return;
+    }
+    const updatedUsers = users.filter((userName) => userName !== parseName(enteredName));
+    setValueToDatabase("users", updatedUsers);
     message.channel.send(`${parseName(enteredName)}님이 삭제되었습니다.`);
     return;
   }
   const isValidKeyword = keyword === "추가" || keyword === "삭제" || keyword === "순위" || keyword === "도움말";
   if (!isValidKeyword) {
-    message.channel.send("올바른 명령어가 아닙니다. 도움말을 보시려면 `@WE TFT Ranking 도움말`을 입력해주세요.");
+    message.channel.send("올바른 명령어가 아닙니다. 도움말을 확인하시려면 `@WE TFT Ranking 도움말`을 입력해주세요.");
     return;
   }
   if (keyword === "도움말") {
