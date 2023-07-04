@@ -1,4 +1,4 @@
-// import "firebase/firestore";
+// TODO: firebase database 보안 설정
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, set, get } from "firebase/database";
 

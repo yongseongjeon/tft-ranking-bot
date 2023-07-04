@@ -1,3 +1,4 @@
+// TODO: 정식 라이엇 API 키로 변경
 import { Client, Intents, MessageEmbed } from "discord.js";
 import { parseName, sortByMmrInDescend } from "./util.js";
 import { requestGetSummonerInfo, requestSummoner } from "./request.js";
@@ -28,7 +29,7 @@ async function handleMessage(message) {
     .replace(/^<@[!&]?\d+>/, "")
     .split(" ");
   if (keyword === "추가") {
-    const isAlreadyAddedUser = users.includes(parseName(enteredName));
+    const isAlreadyAddedUser = users.some((user) => user.name === parseName(enteredName));
     if (isAlreadyAddedUser) {
       message.channel.send(`${parseName(enteredName)}님은 이미 추가되었습니다.`);
       return;
@@ -39,18 +40,19 @@ async function handleMessage(message) {
       message.channel.send(`${parseName(enteredName)}님은 존재하지 않는 유저입니다.`);
       return;
     }
-    const updatedUsers = [...users, parseName(enteredName)];
+    const newUser = { name: parseName(enteredName), summonerId };
+    const updatedUsers = [...users, newUser];
     setValueToDatabase("users", updatedUsers);
     message.channel.send(`${parseName(enteredName)}님이 추가되었습니다.`);
     return;
   }
   if (keyword === "삭제") {
-    const isAddedUser = users.includes(parseName(enteredName));
+    const isAddedUser = users.some((user) => user.name === parseName(enteredName));
     if (!isAddedUser) {
       message.channel.send(`${parseName(enteredName)}님은 순위에 존재하지 않습니다.`);
       return;
     }
-    const updatedUsers = users.filter((userName) => userName !== parseName(enteredName));
+    const updatedUsers = users.filter((user) => user.name !== parseName(enteredName));
     setValueToDatabase("users", updatedUsers);
     message.channel.send(`${parseName(enteredName)}님이 삭제되었습니다.`);
     return;
@@ -72,7 +74,7 @@ async function handleMessage(message) {
       message.channel.send("현재 추가된 사람이 없습니다.");
       return;
     }
-    const requestPromises = users.map(requestSummoner);
+    const requestPromises = users.map(({ name, summonerId }) => requestSummoner(name, summonerId));
     const summoners = await Promise.all(requestPromises);
     summoners.sort(sortByMmrInDescend);
     const names = summoners.map(({ summonerName }) => summonerName);

@@ -43,8 +43,7 @@ export async function requestGetTftRankInfo(summonerId) {
   return { tier, rank, summonerName, leaguePoints };
 }
 
-export async function requestSummoner(name) {
-  const { id: summonerId } = await requestGetSummonerInfo(name);
+export async function requestSummoner(name, summonerId) {
   const { tier, rank, summonerName, leaguePoints } = await requestGetTftRankInfo(summonerId);
   return { tier, rank, summonerName: summonerName || name, leaguePoints, mmr: calculateMmr(tier, rank, leaguePoints) };
 }
