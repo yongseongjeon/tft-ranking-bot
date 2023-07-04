@@ -12,7 +12,7 @@ export async function request({ url, method, body }) {
   }
   const res = await fetch(url, options);
   if (!res.ok) {
-    throw new Error("Request가 실패했습니다.");
+    return false;
   }
   const hasBodyOfRes = !!res.headers.get("Content-Type");
   if (!hasBodyOfRes) {

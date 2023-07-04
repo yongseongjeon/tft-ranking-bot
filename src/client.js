@@ -1,6 +1,6 @@
 import { Client, Intents, MessageEmbed } from "discord.js";
 import { parseName, sortByMmrInDescend } from "./util.js";
-import { requestSummoner } from "./request.js";
+import { requestGetSummonerInfo, requestSummoner } from "./request.js";
 import { getValueFromDatabase, setValueToDatabase } from "./db.js";
 import "dotenv/config";
 
@@ -28,9 +28,15 @@ async function handleMessage(message) {
     .replace(/^<@[!&]?\d+>/, "")
     .split(" ");
   if (keyword === "추가") {
-    const isAlreadyExistUser = users.includes(parseName(enteredName));
-    if (isAlreadyExistUser) {
+    const isAlreadyAddedUser = users.includes(parseName(enteredName));
+    if (isAlreadyAddedUser) {
       message.channel.send(`${parseName(enteredName)}님은 이미 추가되었습니다.`);
+      return;
+    }
+    const { id: summonerId } = await requestGetSummonerInfo(parseName(enteredName));
+    const isExistUserInLOL = !!summonerId;
+    if (!isExistUserInLOL) {
+      message.channel.send(`${parseName(enteredName)}님은 존재하지 않는 유저입니다.`);
       return;
     }
     const updatedUsers = [...users, parseName(enteredName)];
@@ -39,8 +45,8 @@ async function handleMessage(message) {
     return;
   }
   if (keyword === "삭제") {
-    const isExistUser = users.includes(parseName(enteredName));
-    if (!isExistUser) {
+    const isAddedUser = users.includes(parseName(enteredName));
+    if (!isAddedUser) {
       message.channel.send(`${parseName(enteredName)}님은 순위에 존재하지 않습니다.`);
       return;
     }
