@@ -3,7 +3,7 @@ import { calculateMmr } from "./util.js";
 
 export async function request({ url, method, body }) {
   const headers = {
-    "X-Riot-Token": process.env.REACT_APP_RIOT_API_KEY,
+    "X-Riot-Token": process.env.RIOT_API_KEY,
   };
   const options = { method, headers };
   const hasBody = !!body;

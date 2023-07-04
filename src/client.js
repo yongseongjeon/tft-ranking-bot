@@ -9,7 +9,7 @@ const client = new Client({
 let people = [];
 client.on("ready", handleReady);
 client.on("messageCreate", handleMessage);
-client.login(process.env.REACT_APP_DISCORD_API_KEY);
+client.login(process.env.DISCORD_API_KEY);
 
 function handleReady() {
   console.log("TFT RANKING BOT이 온라인입니다.");
