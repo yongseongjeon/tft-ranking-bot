@@ -12,7 +12,7 @@ const client = new Client({
 client.on("ready", handleReady);
 client.on("messageCreate", handleMessage);
 client.login(process.env.DISCORD_API_KEY);
-registerFont("./src/font/Gaegu-Regular.ttf", { family: "Gaegu-Regular" });
+registerFont("./src/font/Orbit-Regular.ttf", { family: "Orbit-Regular" });
 
 function handleReady() {
   console.log("TFT RANKING BOT이 온라인입니다.");
@@ -115,15 +115,15 @@ async function handleMessage(message) {
       return `${tier} ${rank} ${leaguePoints}`;
     });
     const ranking = Array.from({ length: users.length }, (_, i) => 1 + i);
-    const canvas = createCanvas(500, names.length * 50);
+    const canvas = createCanvas(600, 50 + names.length * 50);
     const context = canvas.getContext("2d");
 
     context.fillStyle = "#313338";
     context.fillRect(0, 0, canvas.width, canvas.height);
     context.fillStyle = "white";
-    context.font = "bold 24px Gaegu-Regular";
+    context.font = "bold 24px Orbit-Regular";
 
-    const cellWidth = canvas.width / 3 - 2;
+    const cellWidth = canvas.width / 3;
     const cellHeight = canvas.height / (names.length + 1) - 2;
 
     context.fillText("순위", 0, cellHeight);
@@ -131,14 +131,14 @@ async function handleMessage(message) {
       context.fillText(rank, 0, (index + 2) * cellHeight);
     });
 
-    context.fillText("닉네임", cellWidth, cellHeight);
+    context.fillText("닉네임", 0.4 * cellWidth, cellHeight);
     names.forEach((name, index) => {
-      context.fillText(name, cellWidth, (index + 2) * cellHeight);
+      context.fillText(name, 0.4 * cellWidth, (index + 2) * cellHeight);
     });
 
-    context.fillText("티어", 2 * cellWidth, cellHeight);
+    context.fillText("티어", 1.4 * cellWidth, cellHeight);
     ranks.forEach((rank, index) => {
-      context.fillText(rank, 2 * cellWidth, (index + 2) * cellHeight);
+      context.fillText(rank, 1.4 * cellWidth, (index + 2) * cellHeight);
     });
 
     const image = canvas.toBuffer();
