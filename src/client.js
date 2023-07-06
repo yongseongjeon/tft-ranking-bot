@@ -112,6 +112,12 @@ async function handleMessage(message) {
     }
     const requestPromises = users.map(({ name, summonerId }) => requestSummoner(name, summonerId));
     const summoners = await Promise.all(requestPromises);
+
+    const isExccedNumberOfAPICall = summoners.some((sommoner) => sommoner === false);
+    if (isExccedNumberOfAPICall) {
+      message.channel.send("현재 API 호출 횟수를 초과했습니다. 1분 후에 다시 시도해주세요.");
+      return;
+    }
     summoners.sort(sortByMmrInDescend);
 
     const splitedSummoners = splitArrayByNthELement(summoners, 10);

@@ -35,7 +35,11 @@ export async function requestGetTftRankInfo(summonerId) {
     url: `https://kr.api.riotgames.com/tft/league/v1/entries/by-summoner/${summonerId}`,
     method: "GET",
   });
-  const hasTftStatus = !!res.length;
+  const isFailRequest = !res;
+  if (isFailRequest) {
+    return false;
+  }
+  const hasTftStatus = res.length !== 0;
   if (!hasTftStatus) {
     return { tier: "UNRANKED" };
   }
@@ -44,6 +48,10 @@ export async function requestGetTftRankInfo(summonerId) {
 }
 
 export async function requestSummoner(name, summonerId) {
-  const { tier, rank, summonerName, leaguePoints } = await requestGetTftRankInfo(summonerId);
+  const res = await requestGetTftRankInfo(summonerId);
+  if (!res) {
+    return false;
+  }
+  const { tier, rank, summonerName, leaguePoints } = res;
   return { tier, rank, summonerName: summonerName || name, leaguePoints, mmr: calculateMmr(tier, rank, leaguePoints) };
 }
