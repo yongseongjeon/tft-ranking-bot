@@ -107,43 +107,60 @@ async function handleMessage(message) {
     const requestPromises = users.map(({ name, summonerId }) => requestSummoner(name, summonerId));
     const summoners = await Promise.all(requestPromises);
     summoners.sort(sortByMmrInDescend);
-    const names = summoners.map(({ summonerName }) => summonerName);
-    const ranks = summoners.map(({ tier, rank, leaguePoints }) => {
-      if (tier === "UNRANKED") {
-        return `UNRANKED`;
-      }
-      return `${tier} ${rank} ${leaguePoints}`;
-    });
-    const ranking = Array.from({ length: users.length }, (_, i) => 1 + i);
-    const canvas = createCanvas(600, 50 + names.length * 50);
-    const context = canvas.getContext("2d");
 
-    context.fillStyle = "#313338";
-    context.fillRect(0, 0, canvas.width, canvas.height);
-    context.fillStyle = "white";
-    context.font = "bold 24px Orbit-Regular";
+    const splitedSummoners = splitArrayByNthELement(summoners, 10);
 
-    const cellWidth = canvas.width / 3;
-    const cellHeight = canvas.height / (names.length + 1) - 2;
-
-    context.fillText("순위", 0, cellHeight);
-    ranking.forEach((rank, index) => {
-      context.fillText(rank, 0, (index + 2) * cellHeight);
+    const rankingImages = splitedSummoners.map((summoners, i) => {
+      const canvas = drawRankingImage(summoners, i);
+      return convertCanvasToImage(canvas);
     });
 
-    context.fillText("닉네임", 0.4 * cellWidth, cellHeight);
-    names.forEach((name, index) => {
-      context.fillText(name, 0.4 * cellWidth, (index + 2) * cellHeight);
-    });
-
-    context.fillText("티어", 1.4 * cellWidth, cellHeight);
-    ranks.forEach((rank, index) => {
-      context.fillText(rank, 1.4 * cellWidth, (index + 2) * cellHeight);
-    });
-
-    const image = canvas.toBuffer();
-    const attachment = new MessageAttachment(image, "image.png");
-
-    message.channel.send({ files: [attachment] });
+    rankingImages.forEach((rankingImage) => message.channel.send({ files: [rankingImage] }));
   }
+}
+
+function drawRankingImage(summoners, i) {
+  const names = summoners.map(({ summonerName }) => summonerName);
+  const ranks = summoners.map(({ tier, rank, leaguePoints }) => {
+    if (tier === "UNRANKED") {
+      return tier;
+    }
+    return `${tier} ${rank} ${leaguePoints}`;
+  });
+  const ranking = Array.from({ length: summoners.length }, (_, index) => 1 + 10 * i + index);
+  const canvas = createCanvas(600, 450);
+  const context = canvas.getContext("2d");
+
+  context.fillStyle = "#313338";
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  context.fillStyle = "white";
+  context.font = "bold 24px Orbit-Regular";
+
+  const cellWidth = canvas.width / 3;
+  const cellHeight = canvas.height / (names.length + 1) - 2;
+
+  if (i === 0) {
+    context.fillText("순위", 0, cellHeight);
+    context.fillText("닉네임", 0.4 * cellWidth, cellHeight);
+    context.fillText("티어", 1.4 * cellWidth, cellHeight);
+  }
+
+  ranking.forEach((rank, index) => context.fillText(rank, 0, (index + 2) * cellHeight));
+  names.forEach((name, index) => context.fillText(name, 0.4 * cellWidth, (index + 2) * cellHeight));
+  ranks.forEach((rank, index) => context.fillText(rank, 1.4 * cellWidth, (index + 2) * cellHeight));
+
+  return canvas;
+}
+
+function convertCanvasToImage(canvas) {
+  const tftRankingImage = canvas.toBuffer();
+  return new MessageAttachment(tftRankingImage, "tftRankingImage.png");
+}
+
+function splitArrayByNthELement(array, n) {
+  const total = [];
+  for (let i = 0; i < array.length; i += n) {
+    total.push(array.slice(i, i + n));
+  }
+  return total;
 }
