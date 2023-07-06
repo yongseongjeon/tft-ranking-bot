@@ -1,5 +1,5 @@
 // TODO: 정식 라이엇 API 키로 변경
-import { Client, Intents, MessageEmbed, MessageAttachment } from "discord.js";
+import { Client, Intents, MessageAttachment } from "discord.js";
 import { parseName, sortByMmrInDescend } from "./util.js";
 import { requestGetSummonerInfo, requestSummoner } from "./request.js";
 import { getValueFromDatabase, setValueToDatabase } from "./db.js";
@@ -31,6 +31,11 @@ async function handleMessage(message) {
     .replace(/^<@[!&]?\d+>/, "")
     .split(" ");
   if (keyword === "추가") {
+    const hasSpacing = enteredName.length === 1;
+    if (hasSpacing) {
+      message.channel.send(`공백을 제외한 닉네임을 입력해주세요.`);
+      return;
+    }
     const MAXIMUM_NUMBER_OF_USERS = 20;
     const isMaximumNumberOfUsers = users.length >= MAXIMUM_NUMBER_OF_USERS;
     if (isMaximumNumberOfUsers) {
@@ -55,6 +60,11 @@ async function handleMessage(message) {
     return;
   }
   if (keyword === "삭제") {
+    const hasSpacing = enteredName.length === 1;
+    if (hasSpacing) {
+      message.channel.send(`공백을 제외한 닉네임을 입력해주세요.`);
+      return;
+    }
     const isAddedUser = users.some((user) => user.name === parseName(enteredName));
     if (!isAddedUser) {
       message.channel.send(`${parseName(enteredName)}님은 순위에 존재하지 않습니다.`);
@@ -65,7 +75,7 @@ async function handleMessage(message) {
     message.channel.send(`${parseName(enteredName)}님이 삭제되었습니다.`);
     return;
   }
-  const isValidKeyword = keyword === "추가" || keyword === "삭제" || keyword === "순위" || keyword === "도움말" || keyword === "캔버스";
+  const isValidKeyword = keyword === "추가" || keyword === "삭제" || keyword === "순위" || keyword === "도움말";
   if (!isValidKeyword) {
     message.channel.send("올바른 명령어가 아닙니다. 도움말을 확인하시려면 `@WE TFT Ranking 도움말`을 입력해주세요.");
     return;
@@ -76,7 +86,6 @@ async function handleMessage(message) {
     );
     return;
   }
-  const hasPeople = users.length >= 1;
   // 순위를 embeds로 출력하는 기능이나 모바일에서 제대로 보이지 않아 임시 비활성화
   // if (keyword === "순위") {
   //   if (!hasPeople) {
@@ -106,6 +115,7 @@ async function handleMessage(message) {
   //   message.channel.send({ embeds: [table] });
   // }
   if (keyword === "순위") {
+    const hasPeople = users.length >= 1;
     if (!hasPeople) {
       message.channel.send("현재 추가된 사람이 없습니다.");
       return;
