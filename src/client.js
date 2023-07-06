@@ -31,6 +31,12 @@ async function handleMessage(message) {
     .replace(/^<@[!&]?\d+>/, "")
     .split(" ");
   if (keyword === "추가") {
+    const MAXIMUM_NUMBER_OF_USERS = 20;
+    const isMaximumNumberOfUsers = users.length >= MAXIMUM_NUMBER_OF_USERS;
+    if (isMaximumNumberOfUsers) {
+      message.channel.send(`현재 ${MAXIMUM_NUMBER_OF_USERS}명 이상 추가할 수 없습니다.`);
+      return;
+    }
     const isAlreadyAddedUser = users.some((user) => user.name === parseName(enteredName));
     if (isAlreadyAddedUser) {
       message.channel.send(`${parseName(enteredName)}님은 이미 추가되었습니다.`);
@@ -128,7 +134,7 @@ function drawRankingImage(summoners, i) {
     return `${tier} ${rank} ${leaguePoints}`;
   });
   const ranking = Array.from({ length: summoners.length }, (_, index) => 1 + 10 * i + index);
-  const canvas = createCanvas(600, 450);
+  const canvas = createCanvas(600, 445);
   const context = canvas.getContext("2d");
 
   context.fillStyle = "#313338";
@@ -137,24 +143,29 @@ function drawRankingImage(summoners, i) {
   context.font = "bold 24px Orbit-Regular";
 
   const cellWidth = canvas.width / 3;
-  const cellHeight = canvas.height / (names.length + 1) - 2;
+  const cellHeight = 40;
 
   if (i === 0) {
     context.fillText("순위", 0, cellHeight);
     context.fillText("닉네임", 0.4 * cellWidth, cellHeight);
     context.fillText("티어", 1.4 * cellWidth, cellHeight);
-  }
 
-  ranking.forEach((rank, index) => context.fillText(rank, 0, (index + 2) * cellHeight));
-  names.forEach((name, index) => context.fillText(name, 0.4 * cellWidth, (index + 2) * cellHeight));
-  ranks.forEach((rank, index) => context.fillText(rank, 1.4 * cellWidth, (index + 2) * cellHeight));
+    ranking.forEach((rank, index) => context.fillText(rank, 0, (index + 2) * cellHeight));
+    names.forEach((name, index) => context.fillText(name, 0.4 * cellWidth, (index + 2) * cellHeight));
+    ranks.forEach((rank, index) => context.fillText(rank, 1.4 * cellWidth, (index + 2) * cellHeight));
+
+    return canvas;
+  }
+  ranking.forEach((rank, index) => context.fillText(rank, 0, (index + 1) * cellHeight - 15));
+  names.forEach((name, index) => context.fillText(name, 0.4 * cellWidth, (index + 1) * cellHeight - 15));
+  ranks.forEach((rank, index) => context.fillText(rank, 1.4 * cellWidth, (index + 1) * cellHeight - 15));
 
   return canvas;
 }
 
 function convertCanvasToImage(canvas) {
-  const tftRankingImage = canvas.toBuffer();
-  return new MessageAttachment(tftRankingImage, "tftRankingImage.png");
+  const rankingImage = canvas.toBuffer();
+  return new MessageAttachment(rankingImage, "rankingImage.png");
 }
 
 function splitArrayByNthELement(array, n) {
