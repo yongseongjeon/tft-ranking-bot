@@ -36,7 +36,7 @@ async function handleMessage(message) {
       message.channel.send(`공백을 제외한 닉네임을 입력해주세요.`);
       return;
     }
-    const MAXIMUM_NUMBER_OF_USERS = 20;
+    const MAXIMUM_NUMBER_OF_USERS = 60;
     const isMaximumNumberOfUsers = users.length >= MAXIMUM_NUMBER_OF_USERS;
     if (isMaximumNumberOfUsers) {
       message.channel.send(`현재 ${MAXIMUM_NUMBER_OF_USERS}명 이상 추가할 수 없습니다.`);
