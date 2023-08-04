@@ -1,4 +1,3 @@
-// TODO: 정식 라이엇 API 키로 변경
 import { Client, Intents, MessageAttachment } from "discord.js";
 import { parseName, sortByMmrInDescend } from "./util.js";
 import { requestGetSummonerInfo, requestSummoner } from "./request.js";

@@ -39,11 +39,11 @@ export async function requestGetTftRankInfo(summonerId) {
   if (isFailRequest) {
     return false;
   }
-  const hasTftStatus = res.length !== 0;
+  const hasTftStatus = res.length >= 1;
   if (!hasTftStatus) {
     return { tier: "UNRANKED" };
   }
-  const { tier, rank, summonerName, leaguePoints } = res[0];
+  const { tier, rank, summonerName, leaguePoints } = res.at(-1);
   return { tier, rank, summonerName, leaguePoints };
 }
 
