@@ -43,7 +43,8 @@ export async function requestGetTftRankInfo(summonerId) {
   if (!hasTftStatus) {
     return { tier: "UNRANKED" };
   }
-  const { tier, rank, summonerName, leaguePoints } = res.at(-1);
+  const [soloRankRes] = res.filter((x) => x.queueType === "RANKED_TFT");
+  const { tier, rank, summonerName, leaguePoints } = soloRankRes;
   return { tier, rank, summonerName, leaguePoints };
 }
 
