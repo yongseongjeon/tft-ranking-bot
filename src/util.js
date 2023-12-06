@@ -12,10 +12,11 @@ export function calculateMmr(tier, rank, leaguePoints) {
     SILVER: 802,
     GOLD: 1203,
     PLATINUM: 1604,
-    DIAMOND: 2005,
-    MASTER: 2406,
-    GRANDMASTER: 2406,
-    CHALLENGER: 2406,
+    EMERALD: 2005,
+    DIAMOND: 2406,
+    MASTER: 2807,
+    GRANDMASTER: 2807,
+    CHALLENGER: 2807,
   };
   const RANK = {
     IV: 0,
